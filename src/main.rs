@@ -1,5 +1,4 @@
 fn main() {
-    // println!("Hello, world!");
     let mut sum = 0;
     for i in 0..10 {
         sum += i + 1;
