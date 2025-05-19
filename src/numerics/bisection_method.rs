@@ -26,7 +26,7 @@ pub fn bisection<F: Fn(f64) -> f64>(
     let mut high = high;
     let mut mid = 0.5 * (low + high);
 
-    let mut iter = 1;
+    let mut iter = 0;
     let mut y = func(mid);
 
     // writer to export result to csv file
