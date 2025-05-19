@@ -24,17 +24,23 @@ pub fn bisection<F: Fn(f64) -> f64>(
 
     let mut low = low;
     let mut high = high;
-    let mut mid = 0.0;
+    let mut mid = 0.5 * (low + high);
 
-    let mut iter = 0;
-    let mut y = f64::MAX;
+    let mut iter = 1;
+    let mut y = func(mid);
 
     // writer to export result to csv file
     let mut writer = WriterBuilder::new().from_path(output_path)?;
 
-    while y.abs() > tol && iter < iMax {
-        mid = 0.5 * (low + high);
-        y = func(mid);
+    while y.abs() > tol && iter <= iMax {
+        // write a record to csv file
+        writer.serialize(Record {
+            iteration: iter,
+            low,
+            high,
+            mid,
+            error: y.abs(),
+        })?;
 
         if func(low) * y < 0.0 {
             high = mid;
@@ -44,14 +50,8 @@ pub fn bisection<F: Fn(f64) -> f64>(
             low = mid;
         }
 
-        // write a record to csv file
-        writer.serialize(Record {
-            iteration: iter,
-            low,
-            high,
-            mid,
-            error: y.abs(),
-        })?;
+        mid = 0.5 * (low + high);
+        y = func(mid);
 
         iter += 1;
     }
