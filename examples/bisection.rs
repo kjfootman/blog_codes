@@ -1,11 +1,11 @@
 #![allow(non_snake_case)]
-use std::error::Error;
 use blog_codes::numerics;
+use std::error::Error;
 
 fn main() -> Result<(), Box<dyn Error>> {
-    let low = 0.0;
-    let high = 7.0;
-    let func = |x: f64| x.powi(2) - 1.0;
+    let low = 0.5;
+    let high = 3.5;
+    let func = |x: f64| x.powi(2) - 2.0;
     let iMax = 100;
     let tol = 1E-5;
 
