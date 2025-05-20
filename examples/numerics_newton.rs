@@ -10,7 +10,8 @@ fn main() -> Result<(), Box<dyn Error>> {
     let tol = 1E-5;
 
     let x = numerics::newton(x0, func, dev, iMax, tol)?;
-    println!("{x}");
+
+    println!("\nThe solution is {x:.4}");
 
     Ok(())
 }

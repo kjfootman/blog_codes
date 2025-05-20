@@ -4,8 +4,10 @@ use std::error::Error;
 #[derive(serde::Serialize)]
 struct Record {
     iteration: usize,
+    #[serde(rename = "a")]
     low: f64,
     mid: f64,
+    #[serde(rename = "b")]
     high: f64,
     error: f64,
 }
