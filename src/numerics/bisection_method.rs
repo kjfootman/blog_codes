@@ -65,6 +65,16 @@ pub fn bisection<F: Fn(f64) -> f64>(
         })?;
 
         iter += 1;
+
+        // write a record to csv file
+        writer.serialize(Record {
+            iteration: iter,
+            low,
+            high,
+            mid,
+            error: y.abs(),
+        })?;
+
     }
 
     if iter == iMax {

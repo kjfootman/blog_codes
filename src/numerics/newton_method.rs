@@ -37,14 +37,14 @@ pub fn newton<F: Fn(f64) -> f64, G: Fn(f64) -> f64>(
         x = x - y / d_func(x);
         y = func(x);
 
+        iter += 1;
+
         // write a record to csv file
         writer.serialize(Record {
             iteration: iter,
             x,
             error: y.abs(),
         })?;
-
-        iter += 1;
     }
 
     if iter == iMax {
