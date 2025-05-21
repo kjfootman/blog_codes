@@ -25,19 +25,26 @@ pub fn newton<F: Fn(f64) -> f64, G: Fn(f64) -> f64>(
     // writer to export result to csv file
     let mut writer = WriterBuilder::new().from_path(output_path)?;
 
-    while y.abs() > tol && iter <= iMax {
+    // write a initial value to csv file
+    writer.serialize(Record {
+        iteration: iter,
+        x,
+        error: y.abs(),
+    })?;
+
+    while y.abs() > tol && iter < iMax {
+        // todo: when dev(x) == 0
+        x = x - y / d_func(x);
+        y = func(x);
+
+        iter += 1;
+
         // write a record to csv file
         writer.serialize(Record {
             iteration: iter,
             x,
             error: y.abs(),
         })?;
-
-        // todo: when dev(x) == 0
-        x = x - y / d_func(x);
-        y = func(x);
-
-        iter += 1;
     }
 
     if iter == iMax {
