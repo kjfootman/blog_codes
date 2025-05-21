@@ -11,7 +11,7 @@ struct Record {
 pub fn newton<F: Fn(f64) -> f64, G: Fn(f64) -> f64>(
     x0: f64,
     func: F,
-    dev: G,
+    d_func: G,
     iMax: usize,
     tol: f64,
 ) -> Result<f64, Box<dyn Error>> {
@@ -34,7 +34,7 @@ pub fn newton<F: Fn(f64) -> f64, G: Fn(f64) -> f64>(
         })?;
 
         // todo: when dev(x) == 0
-        x = x - y / dev(x);
+        x = x - y / d_func(x);
         y = func(x);
 
         iter += 1;
