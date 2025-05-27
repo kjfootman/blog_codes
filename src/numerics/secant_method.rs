@@ -8,16 +8,16 @@ struct Record {
     error: f64,
 }
 
-pub fn newton<F: Fn(f64) -> f64, G: Fn(f64) -> f64>(
+pub fn secant<F: Fn(f64) -> f64>(
     x0: f64,
+    x1: f64,
     func: F,
-    d_func: G,
     iMax: usize,
-    tol: f64,
+    tol: f64
 ) -> Result<f64, Box<dyn Error>> {
-    //! Find the solution through the Newton's method with initail value of x0.
-    let output_path = std::env::current_dir()?.join("examples/output/newton.csv");
-
+    //! Find the solution through the secant method with initail value of x0 and x_1.
+    let output_path = std::env::current_dir()?.join("examples/output/secant.csv");
+    
     let mut iter = 0;
     let mut x = x0;
     let mut y = func(x);
@@ -33,9 +33,9 @@ pub fn newton<F: Fn(f64) -> f64, G: Fn(f64) -> f64>(
             error: y.abs(),
         })?;
 
-        // todo: when dev(x) == 0
-        x = x - y / d_func(x);
-        y = func(x);
+        // // todo: when dev(x) == 0
+        // x = x - y / d_func(x);
+        // y = func(x);
 
         iter += 1;
     }
@@ -44,7 +44,5 @@ pub fn newton<F: Fn(f64) -> f64, G: Fn(f64) -> f64>(
         Err("Maximum iteration exceeded.")?
     }
 
-    writer.flush()?;
-
-    Ok(x)
+    Ok(0.0)
 }
