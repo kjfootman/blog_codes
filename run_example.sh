@@ -3,8 +3,11 @@ BASEDIR=$(dirname $0)
 
 cd ${BASEDIR}
 
-# run the example of bisection.rs
+# run the example of numerics_bisection.rs
 cargo run -r --example numerics_bisection
 
-# run the example of bisection.rs
+# run the example of numerics_newton.rs
+cargo run -r --example numerics_newton
+
+# run the example of numberics_secant.rs
 cargo run -r --example numerics_newton

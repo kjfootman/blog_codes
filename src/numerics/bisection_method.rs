@@ -55,15 +55,6 @@ pub fn bisection<F: Fn(f64) -> f64>(
         mid = 0.5 * (low + high);
         y = func(mid);
 
-        // write a record to csv file
-        writer.serialize(Record {
-            iteration: iter,
-            low,
-            high,
-            mid,
-            error: y.abs(),
-        })?;
-
         iter += 1;
 
         // write a record to csv file
@@ -74,7 +65,6 @@ pub fn bisection<F: Fn(f64) -> f64>(
             mid,
             error: y.abs(),
         })?;
-
     }
 
     if iter == iMax {
