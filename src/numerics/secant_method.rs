@@ -1,5 +1,4 @@
 use csv::WriterBuilder;
-use core::f64;
 use std::error::Error;
 
 #[derive(serde::Serialize)]
