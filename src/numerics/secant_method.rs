@@ -1,5 +1,5 @@
-use csv::WriterBuilder;
 use core::f64;
+use csv::WriterBuilder;
 use std::error::Error;
 
 #[derive(serde::Serialize)]
@@ -14,7 +14,7 @@ pub fn secant<F: Fn(f64) -> f64>(
     x_1: f64,
     func: F,
     iMax: usize,
-    tol: f64
+    tol: f64,
 ) -> Result<f64, Box<dyn Error>> {
     //! Find the solution through the secant method with initail value of x0 and x_1.
     let output_path = std::env::current_dir()?.join("examples/output/secant.csv");
