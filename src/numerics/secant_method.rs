@@ -1,4 +1,3 @@
-use core::f64;
 use csv::WriterBuilder;
 use std::error::Error;
 
