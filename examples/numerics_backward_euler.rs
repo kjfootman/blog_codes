@@ -8,7 +8,6 @@ fn main() -> Result<(), Box<dyn Error>> {
     constant.insert("c", 1.0);
     constant.insert("k", 1.0);
 
-
     numerics::euler_backward(constant, 0.0, 1.0);
 
     Ok(())
