@@ -10,4 +10,7 @@ cargo run -r --example numerics_bisection
 cargo run -r --example numerics_newton
 
 # run the example of numberics_secant.rs
-cargo run -r --example numerics_newton
+cargo run -r --example numerics_secant
+
+# run the example of backward_euler.rs
+cargo run -r --example numerics_backward_euler
