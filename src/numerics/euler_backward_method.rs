@@ -1,7 +1,8 @@
 use csv::WriterBuilder;
-use std::{collections::HashMap, error::Error};
+use serde::{Deserialize, Serialize};
+use std::error::Error;
 
-#[derive(serde::Serialize)]
+#[derive(Serialize)]
 struct Record {
     t: f64,
     x: f64,
@@ -9,28 +10,35 @@ struct Record {
     error: f64,
 }
 
-pub fn euler_backward(
-    constant: HashMap<&str, f64>,
-    dx0: f64,
-    x0: f64,
-) -> Result<Vec<f64>, Box<dyn Error>> {
+#[derive(Debug, Serialize, Deserialize)]
+pub struct Input {
+    pub m: f64,
+    pub c: f64,
+    pub k: f64,
+    pub tMax: f64,
+    pub np: usize,
+    pub x0: f64,
+    pub dx0: f64,
+    pub outpath: String,
+}
+
+pub fn euler_backward(input: Input) -> Result<(), Box<dyn Error>> {
     //! find solution of mx'' + cx' + kx = 0
-    let output_path = std::env::current_dir()?.join("examples/output/backward_euler.csv");
+    let output_path = std::env::current_dir()?.join(&input.outpath);
 
-    let m = constant["m"];
-    let c = constant["c"];
-    let k = constant["k"];
+    let m = input.m;
+    let c = input.c;
+    let k = input.k;
 
-    let tmax = 10.0;
-    let np = 101;
+    let tmax = input.tMax;
+    let np = input.np;
     let dt = tmax / (np - 1) as f64;
 
     let mut M = [[0.0, 0.0], [0.0, 0.0]];
-    let mut dx0 = dx0;
-    let mut x0 = x0;
-    let mut dx = dx0;
+    let mut dx0 = input.dx0;
+    let mut x0 = input.x0;
+    let mut dx;
     let mut x = x0;
-    // let mut t = 0.0;
 
     // writer to export result to csv file
     let mut writer = WriterBuilder::new().from_path(output_path)?;
@@ -42,7 +50,7 @@ pub fn euler_backward(
 
     let det = M[0][0] * M[1][1] - M[0][1] * M[1][0];
     let t = (0..np).map(|i| i as f64 * dt).collect::<Vec<_>>();
-    let exact = exact_solution(constant, &t);
+    let exact = exact_solution(&input, &t);
 
     for (t, x_exact) in t.iter().zip(exact) {
         // write a record to csv file
@@ -60,22 +68,18 @@ pub fn euler_backward(
         x0 = x;
     }
 
-    Ok(vec![0.0])
+    Ok(())
 }
 
-fn exact_solution(constant: HashMap<&str, f64>, t: &[f64]) -> Vec<f64> {
+fn exact_solution(input: &Input, t: &[f64]) -> Vec<f64> {
     //! Returns the exact solution corresponding to t.
-    //! x(0) = 1.0
-    //! x'(0) = 0.0
 
-    let m = constant["m"];
-    let c = constant["c"];
-    let k = constant["k"];
+    let m = input.m;
+    let c = input.c;
+    let k = input.k;
     let det = c.powi(2) - 4.0 * m * k;
 
     if det > 0.0 {
-        println!("over damping");
-
         let lamb1 = 0.5 * (-c + (c.powi(2) - 4.0 * m * k).sqrt()) / m;
         let lamb2 = 0.5 * (-c - (c.powi(2) - 4.0 * m * k).sqrt()) / m;
         let c1 = -lamb2 / (lamb1 - lamb2);
@@ -97,12 +101,10 @@ fn exact_solution(constant: HashMap<&str, f64>, t: &[f64]) -> Vec<f64> {
     }
 
     if det < 0.0 {
-        println!("under damping");
-
         let alpha = -c / (2.0 * m);
         let beta = (4.0 * m * k - c.powi(2)).sqrt() / (2.0 * m);
-        let c1 = 1.0;
-        let c2 = -alpha / beta;
+        let c1 = input.x0;
+        let c2 = (input.dx0 - alpha * input.x0) / beta;
 
         return t
             .iter()

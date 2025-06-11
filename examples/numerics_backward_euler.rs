@@ -1,14 +1,12 @@
 #![allow(non_snake_case)]
-use blog_codes::numerics;
-use std::{collections::HashMap, error::Error};
+use blog_codes::numerics::{self, Input};
+use std::{error::Error, fs::File};
 
 fn main() -> Result<(), Box<dyn Error>> {
-    let mut constant = HashMap::new();
-    constant.insert("m", 1.0);
-    constant.insert("c", 1.0);
-    constant.insert("k", 1.0);
+    let file = File::open("examples/input/backward_euler.yaml")?;
+    let input: Input = serde_yaml::from_reader(file)?;
 
-    numerics::euler_backward(constant, 0.0, 1.0)?;
+    numerics::euler_backward(input)?;
 
     Ok(())
 }

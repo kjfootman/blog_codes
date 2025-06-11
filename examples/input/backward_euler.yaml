@@ -1,0 +1,17 @@
+# coefficients
+m: 1.0
+c: 1.0
+k: 1.0
+
+# maximum time
+tMax: 10.0
+
+# number of points
+np: 101
+
+# initial value
+x0: 1.0
+dx0: 0.0
+
+# output file 
+outpath: "examples/output/backward_euler.csv"
