@@ -1,0 +1,4 @@
+low: 0.5
+high: 3.5
+iMax: 100
+tol: 1E-5

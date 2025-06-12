@@ -82,8 +82,8 @@ fn exact_solution(input: &Input, t: &[f64]) -> Vec<f64> {
     if det > 0.0 {
         let lamb1 = 0.5 * (-c + (c.powi(2) - 4.0 * m * k).sqrt()) / m;
         let lamb2 = 0.5 * (-c - (c.powi(2) - 4.0 * m * k).sqrt()) / m;
-        let c1 = -lamb2 / (lamb1 - lamb2);
-        let c2 = lamb1 / (lamb1 - lamb2);
+        let c1 = (input.dx0 - lamb2 * input.x0) / (lamb1 - lamb2);
+        let c2 = (lamb1 * input.x0 - input.dx0) / (lamb1 - lamb2);
 
         return t
             .iter()
@@ -92,12 +92,14 @@ fn exact_solution(input: &Input, t: &[f64]) -> Vec<f64> {
     }
 
     if det == 0.0 {
-        // let lamb = 0.5 * -c / m;
-        // let c1 = -lamb2 / (lamb1 - lamb2);
-        // let c2 = lamb1 / (lamb1 - lamb2);
-        // println!("critical damping");
-        unimplemented!();
-        // return Vec::new();
+        let lamb = -c / (2.0 * m);
+        let c1 = input.x0;
+        let c2 = -lamb * input.x0 + input.dx0;
+
+        return t
+            .iter()
+            .map(|t| c1 * (lamb * t).exp() + c2 * t * (lamb * t).exp())
+            .collect::<Vec<_>>();
     }
 
     if det < 0.0 {
