@@ -34,6 +34,7 @@ pub fn euler_backward(input: Input) -> Result<(), Box<dyn Error>> {
     let np = input.np;
     let dt = tmax / (np - 1) as f64;
 
+    // inverse matrix of coefficient matrix
     let mut M = [[0.0, 0.0], [0.0, 0.0]];
     let mut dx0 = input.dx0;
     let mut x0 = input.x0;
@@ -43,12 +44,14 @@ pub fn euler_backward(input: Input) -> Result<(), Box<dyn Error>> {
     // writer to export result to csv file
     let mut writer = WriterBuilder::new().from_path(output_path)?;
 
-    M[0][0] = 1.0 + c * dt / m;
-    M[0][1] = k * dt / m;
-    M[1][0] = -dt;
-    M[1][1] = 1.0;
+    // inverse of determinant
+    let det = m / (m + c * dt + k * dt.powi(2));
 
-    let det = M[0][0] * M[1][1] - M[0][1] * M[1][0];
+    M[0][0] = det;
+    M[0][1] = -det * k * dt / m;
+    M[1][0] = det * dt;
+    M[1][1] = det * (1.0 + c * dt / m);
+
     let t = (0..np).map(|i| i as f64 * dt).collect::<Vec<_>>();
     let exact = exact_solution(&input, &t);
 
@@ -61,8 +64,8 @@ pub fn euler_backward(input: Input) -> Result<(), Box<dyn Error>> {
             error: x - x_exact,
         })?;
 
-        dx = (M[1][1] * dx0 - M[1][0] * x0) / det;
-        x = (-M[0][1] * dx0 + M[0][0] * x0) / det;
+        dx = M[0][0] * dx0 + M[0][1] * x0;
+        x = M[1][0] * dx0 + M[1][1] * x0;
 
         dx0 = dx;
         x0 = x;
@@ -79,6 +82,7 @@ fn exact_solution(input: &Input, t: &[f64]) -> Vec<f64> {
     let k = input.k;
     let det = c.powi(2) - 4.0 * m * k;
 
+    // over damping
     if det > 0.0 {
         let lamb1 = 0.5 * (-c + (c.powi(2) - 4.0 * m * k).sqrt()) / m;
         let lamb2 = 0.5 * (-c - (c.powi(2) - 4.0 * m * k).sqrt()) / m;
@@ -91,6 +95,7 @@ fn exact_solution(input: &Input, t: &[f64]) -> Vec<f64> {
             .collect::<Vec<_>>();
     }
 
+    // critical damping
     if det == 0.0 {
         let lamb = -c / (2.0 * m);
         let c1 = input.x0;
@@ -102,6 +107,7 @@ fn exact_solution(input: &Input, t: &[f64]) -> Vec<f64> {
             .collect::<Vec<_>>();
     }
 
+    // under damping
     if det < 0.0 {
         let alpha = -c / (2.0 * m);
         let beta = (4.0 * m * k - c.powi(2)).sqrt() / (2.0 * m);
